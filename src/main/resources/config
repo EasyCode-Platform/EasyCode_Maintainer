@@ -30,5 +30,3 @@ users:
   user:
     client-certificate: /home/ragan/.minikube/profiles/minikube/client.crt
     client-key: /home/ragan/.minikube/profiles/minikube/client.key
-~
-~
