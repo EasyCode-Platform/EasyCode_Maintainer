@@ -27,7 +27,7 @@ DELETE（DELETE）：从服务器删除资源。
 @RestController
 @RequestMapping("/pod")
 @Slf4j
-public class PodController {
+public class   PodController {
 
     @GetMapping("/")
     public ResultVO getAllPods() throws Exception {
