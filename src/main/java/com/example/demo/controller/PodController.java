@@ -23,6 +23,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -91,42 +92,40 @@ public class   PodController {
         return v1PodList;
     }
 
-    @PutMapping("/single")
+    @PutMapping("/multiple")
     public ResultVO createSingleContainerPod(@RequestBody PodCreateDTO podCreateDTO) throws IOException {
         ImageDTO[] imageInfos = podCreateDTO.getImageInfos();
-        String imageName = imageInfos[0].getImageName();
-        String containerName = imageInfos[0].getContainerName();
         String podName = podCreateDTO.getPodName();
-        System.out.println(imageName+containerName+podName);
-//        V1Pod pod = podCreateService.createPod(imageName, containerName);
-//        if(pod==null){
-//            return ResultVO.fail("Create container failed.");
-//        }
-//        return ResultVO.ok(pod);
-        ApiClient client = Config.defaultClient();
+        ApiClient client = ClientBuilder
+                .kubeconfig(KubeConfig.loadKubeConfig(new FileReader("./src/main/resources/config")))
+                .build();
         Configuration.setDefaultApiClient(client);
-
         CoreV1Api api = new CoreV1Api();
         V1Pod pod = new V1Pod();
         pod.setApiVersion("v1");
         pod.setKind("Pod");
-
         V1ObjectMeta metadata = new V1ObjectMeta();
         metadata.setName(podName);
         pod.setMetadata(metadata);
+        List<V1Container> containers = new ArrayList<V1Container>();
 
-        V1Container container = new V1Container();
-        container.setName(containerName);
-        container.setImage(imageName);
-        container.setPorts(
-                Arrays.asList(new V1ContainerPort().containerPort(8053)));
+        for(int n=0;n<imageInfos.length;n++){
+            String imageName = imageInfos[n].getImageName();
+            String containerName = imageInfos[n].getContainerName();
+            V1Container container = new V1Container();
+            container.setName(containerName);
+            container.setImage(imageName);
+            container.setPorts(
+                    Arrays.asList(new V1ContainerPort().containerPort(8053)));
+            V1ResourceRequirements resReq = new V1ResourceRequirements();
+            resReq.setLimits(singletonMap("cpu", Quantity.fromString("1")));
+            container.setResources(resReq);
+            containers.add(container);
+        }
 
-        V1ResourceRequirements resReq = new V1ResourceRequirements();
-        resReq.setLimits(singletonMap("cpu", Quantity.fromString("1")));
-        container.setResources(resReq);
 
         V1PodSpec spec = new V1PodSpec();
-        spec.setContainers(Arrays.asList(container));
+        spec.setContainers(containers);
 
         V1PodTemplateSpec template = new V1PodTemplateSpec();
         template.setSpec(spec);
@@ -142,18 +141,13 @@ public class   PodController {
         }
     }
 
-    @PutMapping("/multiple")
-    public ResultVO createMultipleContainerPod(@RequestBody PodCreateDTO podCreateDTO) throws IOException {
-        ImageDTO[] imageInfos = podCreateDTO.getImageInfos();
-        String imageName = imageInfos[0].getImageName();
-        String containerName = imageInfos[0].getContainerName();
-        String podName = podCreateDTO.getPodName();
-//        V1Pod pod = podCreateService.createPod(imageName, containerName);
-//        if(pod==null){
-//            return ResultVO.fail("Create container failed.");
-//        }
-//        return ResultVO.ok(pod);
-        ApiClient client = Config.defaultClient();
+
+    @PutMapping("test")
+    public ResultVO test() throws IOException {
+
+        ApiClient client = ClientBuilder
+                .kubeconfig(KubeConfig.loadKubeConfig(new FileReader("./src/main/resources/config")))
+                .build();
         Configuration.setDefaultApiClient(client);
 
         CoreV1Api api = new CoreV1Api();
@@ -162,17 +156,17 @@ public class   PodController {
         pod.setKind("Pod");
 
         V1ObjectMeta metadata = new V1ObjectMeta();
-        metadata.setName(podName);
+        metadata.setName("example-pod");
         pod.setMetadata(metadata);
 
         V1Container container = new V1Container();
-        container.setName(containerName);
-        container.setImage(imageName);
+        container.setName("example-container");
+        container.setImage("nginx:latest");
         container.setPorts(
-                Arrays.asList(new V1ContainerPort().containerPort(8053)));
+                Arrays.asList(new V1ContainerPort().containerPort(80)));
 
         V1ResourceRequirements resReq = new V1ResourceRequirements();
-        resReq.setLimits(singletonMap("cpu", Quantity.fromString("1")));
+        resReq.setLimits(Collections.singletonMap("cpu", Quantity.fromString("1")));
         container.setResources(resReq);
 
         V1PodSpec spec = new V1PodSpec();
@@ -185,12 +179,14 @@ public class   PodController {
 
         try {
             return ResultVO.ok(api.createNamespacedPod("default", pod, null, null, null));
+
         } catch (ApiException e) {
             System.err.println("Exception when calling CoreV1Api#createNamespacedPod");
             e.printStackTrace();
-            return ResultVO.fail("Create container failed.");
         }
+        return ResultVO.fail("Exception when calling CoreV1Api#createNamespacedPod");
     }
+
 
 
 

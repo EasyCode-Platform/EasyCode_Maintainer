@@ -12,5 +12,8 @@ public class PodCreateDTO {
 
     private ImageDTO[] imageInfos;
 
+//    private  String containerName;
+//    private String imageName;
+
 
 }
