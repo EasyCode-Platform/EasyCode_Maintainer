@@ -7,10 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PodCreateDTO {
-    private  String podName;
-
-    private ImageDTO[] imageInfos;
-
-
+public class ImageDTO {
+    private String imageName;
+    private String containerName;
 }
