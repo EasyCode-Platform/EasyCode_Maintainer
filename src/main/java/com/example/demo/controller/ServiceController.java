@@ -8,5 +8,4 @@ import org.springframework.web.bind.annotation.RestController;
 public class ServiceController {
     @Autowired
     private CoreV1Api api;
-
 }

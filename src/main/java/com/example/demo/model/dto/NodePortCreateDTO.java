@@ -4,22 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Map;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PodCreateDTO {
-    private String podName;
+public class NodePortCreateDTO {
+    private String nodePortName;
+    private ArrayList<Map<String,String>> portList;
+    private Map<String,String> selectLabels;
 
     private String namespace;
-
-    private Map<String,String> labels;
-    private ImageDTO[] imageInfos;
-
-
-//    private  String containerName;
-//    private String imageName;
-
 
 }

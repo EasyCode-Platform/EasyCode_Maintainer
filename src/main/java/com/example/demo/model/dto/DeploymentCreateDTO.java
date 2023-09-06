@@ -5,21 +5,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Map;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PodCreateDTO {
-    private String podName;
-
-    private String namespace;
-
+public class DeploymentCreateDTO {
+    private String deploymentName;
+    private int replicaNum;
     private Map<String,String> labels;
+    private Map<String,String> selectorLabels;
     private ImageDTO[] imageInfos;
-
-
-//    private  String containerName;
-//    private String imageName;
+    private String namespace;
 
 
 }

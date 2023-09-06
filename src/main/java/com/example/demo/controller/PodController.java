@@ -3,7 +3,6 @@ package com.example.demo.controller;
 import com.example.demo.model.dto.ImageDTO;
 import com.example.demo.model.dto.PodCreateDTO;
 import com.example.demo.service.PodCreateService;
-import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.example.demo.model.vo.ResultVO;
 import io.kubernetes.client.custom.Quantity;
@@ -14,7 +13,6 @@ import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.V1PodList;
 import io.kubernetes.client.openapi.models.*;
 import io.kubernetes.client.util.ClientBuilder;
-import io.kubernetes.client.util.Config;
 import io.kubernetes.client.util.KubeConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,10 +21,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static java.util.Collections.*;
 
@@ -94,19 +89,31 @@ public class   PodController {
 
     @PutMapping("/multiple")
     public ResultVO createSingleContainerPod(@RequestBody PodCreateDTO podCreateDTO) throws IOException {
+
+        // get infomation
         ImageDTO[] imageInfos = podCreateDTO.getImageInfos();
         String podName = podCreateDTO.getPodName();
+        String namespace = podCreateDTO.getNamespace();
+        Map<String,String> labels = podCreateDTO.getLabels();
+
+        // initialize api client
         ApiClient client = ClientBuilder
                 .kubeconfig(KubeConfig.loadKubeConfig(new FileReader("./src/main/resources/config")))
                 .build();
         Configuration.setDefaultApiClient(client);
         CoreV1Api api = new CoreV1Api();
+
+        //create pods
         V1Pod pod = new V1Pod();
         pod.setApiVersion("v1");
         pod.setKind("Pod");
+
+        //create metadata
         V1ObjectMeta metadata = new V1ObjectMeta();
         metadata.setName(podName);
+        metadata.setLabels(labels);
         pod.setMetadata(metadata);
+
         List<V1Container> containers = new ArrayList<V1Container>();
 
         for(int n=0;n<imageInfos.length;n++){
@@ -116,7 +123,7 @@ public class   PodController {
             container.setName(containerName);
             container.setImage(imageName);
             container.setPorts(
-                    Arrays.asList(new V1ContainerPort().containerPort(8053)));
+                    Arrays.asList(new V1ContainerPort().containerPort(8090+n)));
             V1ResourceRequirements resReq = new V1ResourceRequirements();
             resReq.setLimits(singletonMap("cpu", Quantity.fromString("1")));
             container.setResources(resReq);
