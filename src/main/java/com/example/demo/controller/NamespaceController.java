@@ -44,7 +44,7 @@ public class NamespaceController {
             return ResultVO.ok(ret);
         } catch (ApiException e) {
             e.printStackTrace();
-            return ResultVO.fail(e.getMessage());
+            return ResultVO.fail(e.getCode()+e.getResponseBody()+e.getResponseHeaders());
         }
 
     }

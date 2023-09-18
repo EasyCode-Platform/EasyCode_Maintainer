@@ -22,7 +22,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -79,7 +78,7 @@ public class NodePortController {
         } catch (ApiException e) {
             System.err.println("Error creating NodePort Service: " + e.getCode()+e.getMessage()+e.getResponseBody());
             e.printStackTrace();
-            return ResultVO.fail("Uncatch error!\n"+e.getMessage());
+            return ResultVO.fail("Uncatch error!\n"+ e.getCode()+e.getResponseBody()+e.getResponseHeaders());
         }catch (IOException e){
             System.err.println("Error creating NodePort Service: " + e.getMessage());
             e.printStackTrace();

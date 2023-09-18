@@ -190,8 +190,9 @@ public class   PodController {
         } catch (ApiException e) {
             System.err.println("Exception when calling CoreV1Api#createNamespacedPod");
             e.printStackTrace();
+            return ResultVO.fail("Exception when calling CoreV1Api#createNamespacedPod"+e.getCode()+e.getResponseBody()+e.getResponseHeaders());
         }
-        return ResultVO.fail("Exception when calling CoreV1Api#createNamespacedPod");
+
     }
 
 

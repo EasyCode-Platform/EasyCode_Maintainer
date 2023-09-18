@@ -95,9 +95,9 @@ public class DeploymentController {
             System.out.println("Deployment created: " + createdDeployment.getMetadata().getName());
             return ResultVO.ok(createdDeployment);
         } catch (ApiException e) {
-            System.err.println("Error creating Deployment: " + e.getMessage());
+            System.err.println("Error creating Deployment: " + e.getCode()+e.getResponseBody()+e.getResponseHeaders());
             e.printStackTrace();
-            return ResultVO.fail("Error creating Deployment: " + e.getMessage());
+            return ResultVO.fail("Error creating Deployment: " + + e.getCode()+e.getResponseBody()+e.getResponseHeaders());
         } catch (FileNotFoundException e) {
             ResultVO.fail("File Not Found: " + e.getMessage());
             throw new RuntimeException(e);
