@@ -6,7 +6,6 @@ import io.kubernetes.client.custom.IntOrString;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.Configuration;
-import io.kubernetes.client.openapi.apis.AppsV1Api;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.V1ObjectMeta;
 import io.kubernetes.client.openapi.models.V1Service;
@@ -42,12 +41,13 @@ public class NodePortController {
         System.out.println(namespace);
         ArrayList<V1ServicePort> ports= new ArrayList<V1ServicePort>();
 
-        for(int i=0;i<portList.size();i++){
+        for (Map<String, String> stringStringMap : portList) {
             ports.add(new V1ServicePort()
-                    .name(portList.get(i).get("name"))
-                    .port(Integer.valueOf(portList.get(i).get("port"))) // 服务端口
-                    .targetPort(new IntOrString(portList.get(i).get("targetPort"))) // 目标容器端口
-                    .nodePort(Integer.valueOf(portList.get(i).get("nodePort"))));// NodePort 端口)
+                    .name(stringStringMap.get("name"))
+                    .port(Integer.valueOf(stringStringMap.get("port"))) // 服务端口
+                    .targetPort(new IntOrString(Integer.parseInt(stringStringMap.get("targetPort")))) // 目标容器端口
+                    .nodePort(Integer.valueOf(stringStringMap.get("nodePort")))// NodePort 端口)
+                    .protocol("TCP"));
         }
 
 
@@ -69,16 +69,21 @@ public class NodePortController {
                             .type("NodePort") // 指定服务类型为 NodePort
                             .ports(ports)
                             .selector(selectLabels) // 选择器
+
                     );
 
             // 使用 API 创建 Service
             V1Service createdService = api.createNamespacedService(namespace, service, null, null, null);
             System.out.println("NodePort Service created: " + createdService.getMetadata().getName());
             return  ResultVO.ok(createdService);
-        } catch (ApiException | IOException e) {
-            System.err.println("Error creating NodePort Service: " + e.getMessage());
+        } catch (ApiException e) {
+            System.err.println("Error creating NodePort Service: " + e.getCode()+e.getMessage()+e.getResponseBody());
             e.printStackTrace();
             return ResultVO.fail("Uncatch error!\n"+e.getMessage());
+        }catch (IOException e){
+            System.err.println("Error creating NodePort Service: " + e.getMessage());
+            e.printStackTrace();
+            return ResultVO.fail("IO ERROR!\n"+e.getMessage());
         }
 
     }
