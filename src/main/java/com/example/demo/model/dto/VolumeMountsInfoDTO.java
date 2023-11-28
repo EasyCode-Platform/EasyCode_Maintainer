@@ -13,4 +13,6 @@ public class VolumeMountsInfoDTO {
     private String volumeName; //卷名字
     private String hostPath; // 节点上的路径
 
+    private String serverIP; // NFS结点的IP地址
+
 }

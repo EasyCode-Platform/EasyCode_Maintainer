@@ -107,12 +107,18 @@ public class StatefulSetController {
             v1VolumeMounts.add(volumeMount);
             V1Volume volume =  new V1Volume();
             volume.setName(volumeMountsInfos[i].getVolumeName());
-            V1HostPathVolumeSource hostPath = new V1HostPathVolumeSource();
-            hostPath.setPath(volumeMountsInfos[i].getHostPath());
-            hostPath.setType("DirectoryOrCreate");
-            volume.setHostPath(hostPath);
+//            V1HostPathVolumeSource hostPath = new V1HostPathVolumeSource();
+//            hostPath.setPath(volumeMountsInfos[i].getHostPath());
+//            hostPath.setType("DirectoryOrCreate");
+//            volume.setHostPath(hostPath);
+            V1NFSVolumeSource v1NFSVolumeSource = new V1NFSVolumeSource();
+            v1NFSVolumeSource.setServer(volumeMountsInfos[i].getServerIP());
+            v1NFSVolumeSource.setReadOnly(false);
+            v1NFSVolumeSource.setPath(volumeMountsInfos[i].getHostPath());
+            volume.setNfs(v1NFSVolumeSource);
             v1Volumes.add(volume);
         }
+
 
         for(int i=0;i<containers.size();i++){
             containers.get(i).setVolumeMounts(v1VolumeMounts);
