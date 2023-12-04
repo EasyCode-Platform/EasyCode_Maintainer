@@ -42,11 +42,15 @@ public class StatefulSetController {
 
         Map<String,String> selectorLabels = statefulSetCreateDTO.getSelectorLabels();
 
+        Map<String,String> envVariables = statefulSetCreateDTO.getEnvVariables();
+
         ImageDTO[] imageInfos = statefulSetCreateDTO.getImageInfos();
 
         VolumeMountsInfoDTO[] volumeMountsInfos = statefulSetCreateDTO.getVolumeMountsInfos();
 
         String namespace = statefulSetCreateDTO.getNamespace();
+
+
 
         System.out.println(statefulSetName);
         System.out.println(replicaNum);
@@ -93,6 +97,12 @@ public class StatefulSetController {
             v1Container.setName(containerName);
             v1Container.setPorts(Arrays.asList(new V1ContainerPort().containerPort(containerPort)));
             v1Container.setImagePullPolicy("IfNotPresent");
+            List<V1EnvVar> envVars = new ArrayList<>();
+            for(Map.Entry<String,String> entry: envVariables.entrySet()){
+                envVars.add(new V1EnvVar().name(entry.getKey()).value(entry.getValue()));
+
+            }
+            v1Container.setEnv(envVars);
             containers.add(v1Container);
         }
 

@@ -14,8 +14,8 @@ public class StatefulSetCreateDTO {
     private int replicaNum;
     private Map<String,String> labels;
     private Map<String,String> selectorLabels;
+    private Map<String,String> envVariables;
     private ImageDTO[] imageInfos;
-
     private VolumeMountsInfoDTO[] volumeMountsInfos; // 一一对应
     private String namespace;
 
