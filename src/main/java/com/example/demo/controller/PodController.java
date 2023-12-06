@@ -14,6 +14,7 @@ import io.kubernetes.client.openapi.models.V1PodList;
 import io.kubernetes.client.openapi.models.*;
 import io.kubernetes.client.util.ClientBuilder;
 import io.kubernetes.client.util.KubeConfig;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,7 @@ PATCH（UPDATE）：在服务器更新资源（客户端提供需要修改的资
 DELETE（DELETE）：从服务器删除资源。
  */
 
+
 @RestController
 @RequestMapping("/pod")
 @Slf4j
@@ -42,6 +44,7 @@ public class   PodController {
     private PodCreateService podCreateService;
     @Autowired
     private RestTemplate restTemplate;
+
     @GetMapping("/")
     public ResultVO getAllPods() {
         String kubeConfigPath = "./src/main/resources/config";
@@ -63,28 +66,6 @@ public class   PodController {
             e.printStackTrace();
             return ResultVO.fail("Error reading Kubernetes configuration file: " + e.getMessage());
         }
-    }
-    @RequestMapping(value = "/hello")
-    public V1PodList hello() throws Exception {
-        // 存放K8S的config文件的全路径
-        String kubeConfigPath = "./src/main/resources/config";
-
-        // 以config作为入参创建的client对象，可以访问到K8S的API Server
-        ApiClient client = ClientBuilder
-                .kubeconfig(KubeConfig.loadKubeConfig(new FileReader(kubeConfigPath)))
-                .build();
-
-        Configuration.setDefaultApiClient(client);
-
-        CoreV1Api api = new CoreV1Api();
-
-        // 调用客户端API取得所有pod信息
-        V1PodList v1PodList = api.listPodForAllNamespaces(null, null, null, null, null, null, null, null, null);
-
-        // 使用jackson将集合对象序列化成JSON，在日志中打印出来
-        log.info("pod info \n{}", new GsonBuilder().setPrettyPrinting().create().toJson(v1PodList));
-        System.out.println(v1PodList);
-        return v1PodList;
     }
 
     @PutMapping("/multiple")
@@ -149,51 +130,7 @@ public class   PodController {
     }
 
 
-    @PutMapping("test")
-    public ResultVO test() throws IOException {
 
-        ApiClient client = ClientBuilder
-                .kubeconfig(KubeConfig.loadKubeConfig(new FileReader("./src/main/resources/config")))
-                .build();
-        Configuration.setDefaultApiClient(client);
-
-        CoreV1Api api = new CoreV1Api();
-        V1Pod pod = new V1Pod();
-        pod.setApiVersion("v1");
-        pod.setKind("Pod");
-
-        V1ObjectMeta metadata = new V1ObjectMeta();
-        metadata.setName("example-pod");
-        pod.setMetadata(metadata);
-
-        V1Container container = new V1Container();
-        container.setName("example-container");
-        container.setImage("nginx:latest");
-        container.setPorts(
-                Arrays.asList(new V1ContainerPort().containerPort(80)));
-
-        V1ResourceRequirements resReq = new V1ResourceRequirements();
-        resReq.setLimits(Collections.singletonMap("cpu", Quantity.fromString("1")));
-        container.setResources(resReq);
-
-        V1PodSpec spec = new V1PodSpec();
-        spec.setContainers(Arrays.asList(container));
-
-        V1PodTemplateSpec template = new V1PodTemplateSpec();
-        template.setSpec(spec);
-
-        pod.setSpec(spec);
-
-        try {
-            return ResultVO.ok(api.createNamespacedPod("default", pod, null, null, null));
-
-        } catch (ApiException e) {
-            System.err.println("Exception when calling CoreV1Api#createNamespacedPod");
-            e.printStackTrace();
-            return ResultVO.fail("Exception when calling CoreV1Api#createNamespacedPod"+e.getCode()+e.getResponseBody()+e.getResponseHeaders());
-        }
-
-    }
 
 
 

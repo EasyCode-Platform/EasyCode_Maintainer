@@ -1,4 +1,3 @@
-
 # kubernetes-controller
 > a small Springboot application to control kubernetes computing resources for a low code develop platform
 
@@ -822,6 +821,7 @@ example:
 ```
 
 ### Service
+
 PUT /nodeport/
 Request:
     A JSON example:
@@ -851,6 +851,7 @@ portList:Detailed information about the port forwarding.
 selectorLabels:labels used to mark and find what deployment object to be port forwarded.
 
 namespace:..
+
 
 
 
@@ -1030,3 +1031,6 @@ A JSON example:
 }
 
 ```
+
+
+
