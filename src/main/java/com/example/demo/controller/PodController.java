@@ -15,9 +15,6 @@ import io.kubernetes.client.openapi.models.*;
 import io.kubernetes.client.util.ClientBuilder;
 import io.kubernetes.client.util.KubeConfig;
 
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
@@ -37,7 +34,7 @@ PATCH（UPDATE）：在服务器更新资源（客户端提供需要修改的资
 DELETE（DELETE）：从服务器删除资源。
  */
 
-@Tag(name= "PodController" , description = "Pod management")
+
 @RestController
 @RequestMapping("/pod")
 @Slf4j
@@ -47,7 +44,7 @@ public class   PodController {
     private PodCreateService podCreateService;
     @Autowired
     private RestTemplate restTemplate;
-    @Operation(summary = "Get all pods")
+
     @GetMapping("/")
     public ResultVO getAllPods() {
         String kubeConfigPath = "./src/main/resources/config";
@@ -71,7 +68,6 @@ public class   PodController {
         }
     }
 
-    @Operation(summary = "Create single pod with multiple containers")
     @PutMapping("/multiple")
     public ResultVO createSingleContainerPod(@RequestBody PodCreateDTO podCreateDTO) throws IOException {
 

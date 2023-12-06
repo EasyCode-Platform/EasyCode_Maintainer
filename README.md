@@ -822,6 +822,38 @@ example:
 
 ### Service
 
+PUT /nodeport/
+Request:
+    A JSON example:
+``` json
+{
+    "nodePortName":"demo",
+    "portList":
+    [
+        {
+            "name":"nginx",
+            "port":"8089",
+            "targetPort":"8089",
+            "nodePort":"30002"
+        }
+    ],
+    "selectLabels":{
+        "app":"app-011"
+    },
+    "namespace":"hello"
+}
+
+```
+nodePortName:Name of this Kubernetes Object
+
+portList:Detailed information about the port forwarding.
+
+selectorLabels:labels used to mark and find what deployment object to be port forwarded.
+
+namespace:..
+
+
+
 
 ### Namespace
 GET /namespace/
@@ -966,5 +998,39 @@ Response: A data containing a list of namespaces:
 }
 
 ```
+
+### StatefulSet
+PUT /statefulset/
+Request:
+A JSON example:
+``` json
+{
+    "statefulSetName":"statefulset-demo",
+    "replicaNum":1,
+    "labels":{
+        "name":"app-011",
+        "app":"app-011"
+    },
+    "selectorLabels":{
+        "app":"app-011"
+    },
+    "imageInfos":[
+        {   
+        "imageName":"mongo:4.4",
+        "containerName":"nmongo",
+        "containerPort":27017
+        }
+    ],
+    "volumeMountsInfos":[{
+        "mountPath":"/data/db",
+        "volumeName":"mongo-data",
+        "hostPath":"/data/mongo-data "
+    }],
+    "namespace":"hello"
+
+}
+
+```
+
 
 
